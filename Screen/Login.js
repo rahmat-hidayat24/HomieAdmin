@@ -21,7 +21,7 @@ export default class Login extends Component {
 
 
     loginMethod = () => {
-        fetch(`${Server.GetBackEndserver()}/login`, {
+        fetch(`${Server.GetBackEndserver()}/login?loginMethod=username&username=${this.state.username}&password=${this.state.password}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

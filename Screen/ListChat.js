@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { View, Text, Image, ScrollView, StatusBar, TextInput, ImageBackground, AsyncStorage, TouchableOpacity, RefreshControl, Modal , Alert} from 'react-native'
 import Icon from 'react-native-vector-icons/Feather'
 import Server from './ServerFunction'
+import CountChat from './CountChat'
 
 export default class ListChat extends Component {
     constructor(props) {
@@ -45,6 +46,22 @@ export default class ListChat extends Component {
         })
     }
 
+    updateRead_at(idChat){
+        fetch(`${Server.GetBackEndserver()}/chat/update/status/livechat/${idChat}`,{
+            method:'PUT',
+            headers:{
+                'Accept' : 'application/json',
+                'Content-Type' : 'application/json'
+            },
+            body:JSON.stringify({
+                status : 'read'
+            })
+        })
+        .then(res => res.json())
+        .then(res=>{
+            console.log('Berhasil Ubah')
+        })
+    }
 
     deleteOption(){
         Alert.alert(
@@ -134,10 +151,10 @@ export default class ListChat extends Component {
 
                     {
                         this.state.listChat.map((item, index) => (
-                            <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate('Chat', { idChat:item.idChat , usernameUser: item.usernameUser, nama:item.nama})} onLongPress={() => this.showoption(item.idChat)}>
+                            <TouchableOpacity key={index} onPress={() => {this.props.navigation.navigate('Chat', { idChat:item.idChat , usernameUser: item.usernameUser, nama:item.nama}),this.updateRead_at(item.idChat)}} onLongPress={() => this.showoption(item.idChat)}>
                                 <View style={{ flexDirection: 'row', padding: 5, borderBottomColor: '#dcdddf', borderBottomWidth: 1, marginTop: 10, alignItems: 'center' }} >
                                     <Image source={{ uri: `${Server.GetBackEndserver()}/images/user/${item.poto}` }} style={{ width: 40, height: 40, borderRadius: 20, borderColor: '#dcdddf', borderWidth: 1 }} />
-
+                                    <CountChat idChat={item.idChat} username={this.state.username} jenis={this.state.jenis} />
                                     <View style={{ width: '80%', padding: 10 }}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                             <Text>{item.nama }</Text>

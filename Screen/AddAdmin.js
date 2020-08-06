@@ -50,29 +50,51 @@ export default class AddAdmin extends Component {
 
 
     checkUsername() {
-        fetch(`${Server.GetBackEndserver()}/check/${this.state.username}`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-        })
-            .then(response => response.json())
-            .then(res => {
-                if (res === [] || res === undefined || res.length === 0) {
-                    this.props.navigation.navigate('Setting'), 
-                    this.addAdmin()
-                }
-                else {
-                    alert('Username Sudah Ada')
-                }
+        const { nama, email, team, username, password, alamat, kota, tel, jk } = this.state
+        if (nama == '') {
+            alert('Nama Tidak Boleh Kosong')
+        } else if (email == '') {
+            alert('Email Tidak Boleh Kosong')
+        } else if (team == '') {
+            alert('Pilih Team')
+        } else if (username == '') {
+            alert('Username Tidak Boleh Kosong')
+        } else if (password == '') {
+            alert('Password Tidak Boleh Kosong')
+        } else if (alamat == '') {
+            alert('Alamat Tidak Boleh Kosong')
+        } else if (kota == '') {
+            alert('Kota Tidak Boleh Kosong')
+        } else if (tel == '') {
+            alert('Nomor Telepon Tidak Boleh Kosong')
+        } else if (jk == '') {
+            alert('Pilih Jenis Kelamin')
+        } else {
+            fetch(`${Server.GetBackEndserver()}/check/${this.state.username}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
             })
+                .then(response => response.json())
+                .then(res => {
+                    if (res === [] || res === undefined || res.length === 0) {
+                        this.props.navigation.navigate('Setting'),
+                            this.addAdmin()
+                    }
+                    else {
+                        alert('Username Sudah Ada')
+                    }
+                })
+        }
 
     }
 
 
 
     addAdmin() {
+
         fetch(`${Server.GetBackEndserver()}/register/admin`,
             {
                 method: 'POST',
@@ -89,7 +111,7 @@ export default class AddAdmin extends Component {
                     email: this.state.email,
                     tel: this.state.tel,
                     team: this.state.team,
-                    jk:this.state.jk
+                    jk: this.state.jk
                 })
             })
             .then(res => {
@@ -116,7 +138,6 @@ export default class AddAdmin extends Component {
         })
             .then(response => response.json())
             .then(res => {
-                console.log(res)
             }).catch(err => {
                 console.log(err)
             })
@@ -152,12 +173,8 @@ export default class AddAdmin extends Component {
 
     }
 
-
-
-    getPhotos() {
-        // //Before calling getPhotos, request permission
+    imagePicker() {
         ImagePicker.showImagePicker(options, (response) => {
-            console.log('Response = ', response);
 
             if (response.didCancel) {
                 console.log('User cancelled image picker');
@@ -166,10 +183,10 @@ export default class AddAdmin extends Component {
             } else if (response.customButton) {
                 console.log('User tapped custom button: ', response.customButton);
             } else {
-                // const source = { uri: response.uri };
 
                 // You can also display the image using data:
-                // console.log(source)
+                // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+
                 this.setState({
                     selected_image: response.data,
                 });
@@ -179,9 +196,11 @@ export default class AddAdmin extends Component {
 
     getPhotosOption = async () => {
         if (await this.requestExternalStoreageRead()) {
-            this.chooseImage()
+            this.imagePicker()
         }
     }
+
+
 
 
     resizeImage = (event) => {
@@ -202,8 +221,8 @@ export default class AddAdmin extends Component {
                     visible={this.state.showTeam}>
                     <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,.5)', justifyContent: 'center', alignItems: 'center' }} onTouchEndCapture={() => this.setState({ showTeam: false })}>
                         <View style={{ backgroundColor: '#fff', paddingVertical: '5%', borderRadius: 10, width: '80%' }}>
-                            <View style={{borderBottomWidth:1, padding:8}}>
-                                <Text style={{textAlign:'center', fontWeight:'bold', fontSize:25}}>Select Team</Text>
+                            <View style={{ borderBottomWidth: 1, padding: 8 }}>
+                                <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 25 }}>Select Team</Text>
                             </View>
                             <View style={{ alignItems: 'center' }}>
 
@@ -223,8 +242,8 @@ export default class AddAdmin extends Component {
                     visible={this.state.showJk}>
                     <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,.5)', justifyContent: 'center', alignItems: 'center' }} onTouchEndCapture={() => this.setState({ showJk: false })}>
                         <View style={{ backgroundColor: '#fff', paddingVertical: '5%', borderRadius: 10, width: '80%' }}>
-                            <View style={{borderBottomWidth:1, padding:8}}>
-                                <Text style={{textAlign:'center', fontWeight:'bold', fontSize:25}}>Select Gender</Text>
+                            <View style={{ borderBottomWidth: 1, padding: 8 }}>
+                                <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 25 }}>Select Gender</Text>
                             </View>
                             <View style={{ alignItems: 'center' }}>
 
@@ -253,7 +272,7 @@ export default class AddAdmin extends Component {
                                 <Image source={{ uri: `${Server.GetBackEndserver()}/images/user/noPotoUser.png` }} onLoad={this.resizeImage} style={{ width: 120, height: 120, borderRadius: 60, borderColor: '#dcdddf', borderWidth: 1, alignSelf: 'center' }} />
                         }
                         <View style={{ backgroundColor: '#24A1D7', borderRadius: 30, padding: 10, marginTop: -40, marginRight: -80 }}>
-                            <IconJk name='camera' size={20} color='#fff' onPress={() => this.getPhotos()} />
+                            <IconJk name='camera' size={20} color='#fff' onPress={() => this.getPhotosOption()} />
                         </View>
                         <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 15 }}>
                             <TextInput
@@ -373,7 +392,7 @@ export default class AddAdmin extends Component {
                     </View>
                     <View style={styles.bodyItemContainer}>
                         <Icon name='phone-android' size={25} color='#cbced0' />
-                        <TextInput style={[styles.itemText,{width:'90%'}]}
+                        <TextInput style={[styles.itemText, { width: '90%' }]}
                             keyboardType='number-pad'
                             placeholderTextColor="rgba(0,0,0,0.6)"
                             autoCapitalize="none"
@@ -386,13 +405,13 @@ export default class AddAdmin extends Component {
                     <View style={styles.bodyItemContainer}>
                         <IconJk name='intersex' size={25} color='#cbced0' />
                         {
-                            this.state.jk === '' || !this.state.jk ? 
-                            <TouchableOpacity style={{ padding:10, width:'90%'}} onPress={()=> this.setState({showJk:true})}>
-                                <Text style={styles.itemText}>Select Gender</Text>
-                            </TouchableOpacity> :
-                            <TouchableOpacity style={{ padding:10, width:'90%'}} onPress={()=> this.setState({showJk:true})}>
-                                <Text style={styles.itemText}>{this.state.jk}</Text>
-                            </TouchableOpacity>
+                            this.state.jk === '' || !this.state.jk ?
+                                <TouchableOpacity style={{ padding: 10, width: '90%' }} onPress={() => this.setState({ showJk: true })}>
+                                    <Text style={styles.itemText}>Select Gender</Text>
+                                </TouchableOpacity> :
+                                <TouchableOpacity style={{ padding: 10, width: '90%' }} onPress={() => this.setState({ showJk: true })}>
+                                    <Text style={styles.itemText}>{this.state.jk}</Text>
+                                </TouchableOpacity>
                         }
                     </View>
                 </View>

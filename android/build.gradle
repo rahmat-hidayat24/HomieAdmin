@@ -3,9 +3,11 @@
 buildscript {
     ext {
         buildToolsVersion = "28.0.3"
-        minSdkVersion = 16
+        minSdkVersion = 21
         compileSdkVersion = 28
         targetSdkVersion = 28
+        playServicesVersion = "16.1.0" // or set latest version
+        androidMapsUtilsVersion = "16.1.0"
     }
     repositories {
         google()
@@ -30,9 +32,11 @@ allprojects {
             // Android JSC is installed from npm
             url("$rootDir/../node_modules/jsc-android/dist")
         }
+        
+        maven { url 'https://maven.google.com' }
+        maven { url 'https://jitpack.io' }
 
         google()
         jcenter()
-        maven { url 'https://jitpack.io' }
     }
 }

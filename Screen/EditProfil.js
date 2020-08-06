@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { View, Text, TextInput, Image, ScrollView, StyleSheet, AsyncStorage, TouchableOpacity, Modal, ToastAndroid, Dimensions, Button, Platform, PermissionsAndroid, Alert, Linking } from 'react-native'
+import ImagePicker from 'react-native-image-picker'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import IconJk from 'react-native-vector-icons/FontAwesome'
 import Server from './ServerFunction'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import ImagePicker from 'react-native-image-picker'
 
 const options = {
     title: 'Select Photo',
@@ -145,10 +145,7 @@ export default class EditProfil extends Component {
 
     }
 
-
-
-    getPhotos() {
-        // //Before calling getPhotos, request permission
+    imagePicker() {
         ImagePicker.showImagePicker(options, (response) => {
             console.log('Response = ', response);
 
@@ -159,10 +156,10 @@ export default class EditProfil extends Component {
             } else if (response.customButton) {
                 console.log('User tapped custom button: ', response.customButton);
             } else {
-                // const source = { uri: response.uri };
 
                 // You can also display the image using data:
-                // console.log(source)
+                // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+
                 this.setState({
                     selected_image: response.data,
                 });
@@ -172,7 +169,7 @@ export default class EditProfil extends Component {
 
     getPhotosOption = async () => {
         if (await this.requestExternalStoreageRead()) {
-            this.chooseImage()
+            this.imagePicker()
         }
     }
 
@@ -212,7 +209,7 @@ export default class EditProfil extends Component {
                                 <Image source={{ uri: `${Server.GetBackEndserver()}/images/user/${user.poto}` }} onLoad={this.resizeImage} style={{ width: 120, height: 120, borderRadius: 60, borderColor: '#dcdddf', borderWidth: 1, alignSelf: 'center' }} />
                         }
                         <View style={{ backgroundColor: '#24A1D7', borderRadius: 30, padding: 10, marginTop: -40, marginRight: -80 }}>
-                            <IconJk name='camera' size={20} color='#fff' onPress={() => this.getPhotos()} />
+                            <IconJk name='camera' size={20} color='#fff' onPress={() => this.getPhotosOption()} />
                         </View>
                         <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 15 }}>
                             <TextInput

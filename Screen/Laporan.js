@@ -75,6 +75,23 @@ export default class Laporan extends Component {
                 <View style={styles.leftSide}>
                 </View>
 
+                <TouchableOpacity onPress={() => this.props.navigation.navigate('Chart')} activeOpacity={0.8}>
+                    <View style={styles.btnContainer}>
+                        <View style={styles.btnItemContainer}>
+                            <View style={styles.btnItemLeftIconContainer}>
+                                <Icon2 name='chart-line' size={35} color='#758184' />
+                            </View>
+                            <View style={styles.btnTextContainer}>
+                                <Text style={styles.btnItemTextTitle}>Statistik</Text>
+                                <Text style={styles.btnItemSmallText}>6 items</Text>
+                            </View>
+                            <View style={styles.btnItemRightIconContainer}>
+                                <Icon name='ios-arrow-dropright' size={30} color='#758184' />
+                            </View>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+
                 <TouchableOpacity onPress={() => this.props.navigation.navigate('ListHunian')} activeOpacity={0.8}>
                     <View style={styles.btnContainer}>
                         <View style={styles.btnItemContainer}>

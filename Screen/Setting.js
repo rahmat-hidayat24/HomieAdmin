@@ -27,6 +27,9 @@ export default class Setting extends Component {
                     dataUser: res
                 })
             })
+            .catch(err => {
+                console.log(err, ' Get Data Admin')
+            })
     }
 
 
@@ -38,6 +41,9 @@ export default class Setting extends Component {
                     listData: res
                 })
             })
+            .catch(err => {
+                console.log(err, ' Get List Data Admin')
+            })
     }
 
     LogoutMethod = () => {
@@ -46,24 +52,27 @@ export default class Setting extends Component {
     }
 
     async componentDidMount() {
-        const {navigation} = this.props
-        this.focusListener = navigation.addListener('willFocus',()=>{
+        const { navigation } = this.props
+        this.focusListener = navigation.addListener('willFocus', () => {
             this.getListDataAdmin(), this.getDataAdmin()
         })
-        let username = await AsyncStorage.getItem('username')
-        this.setState({ username: username })
-        this.getDataAdmin()
-        this.getListDataAdmin()
+        await AsyncStorage.getItem('username')
+        .then(res =>{
+            this.setState({ username: res })
+            this.getDataAdmin()
+            this.getListDataAdmin()
+        })
+       
     }
 
     render() {
         var user = this.state.dataUser
         return (
-            <View style={{ flex: 1, backgroundColor: '#fcfcfc' }}>
+            <View style={{ flex: 1, backgroundColor: '#fcfcfc', marginBottom: '8%' }}>
                 <ScrollView showsVerticalScrollIndicator={false} removeClippedSubviews={false}>
                     <View style={{ width: '95%', backgroundColor: '#fff', borderRadius: 10, alignSelf: 'center', elevation: 10, paddingHorizontal: 50, paddingVertical: 15, marginTop: 30 }}>
                         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                            <View style={{width: 120, height: 120, borderRadius: 60, elevation:8}}>
+                            <View style={{ width: 120, height: 120, borderRadius: 60, elevation: 8 }}>
                                 <Image source={{ uri: `${Server.GetBackEndserver()}/images/user/${user.poto}` }} style={{ width: 120, height: 120, borderRadius: 60 }} />
                             </View>
                             <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 15 }}>

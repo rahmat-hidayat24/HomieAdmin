@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View } from 'react-native'
+import { View, Dimensions } from 'react-native'
 import { createStackNavigator } from 'react-navigation-stack'
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createBottomTabNavigator } from 'react-navigation-tabs'
@@ -27,6 +27,8 @@ import EditProfileComponent from './EditProfil'
 import AddAdminComponent from './AddAdmin'
 import ChatComponent from './Chat'
 import ListChatComponent from './ListChat'
+import ChartComponent from './Chart'
+import PhotoSphereComponent from './PhotoSphere'
 
 
 const LoginStack = createStackNavigator({
@@ -59,8 +61,8 @@ const SettingStack = createStackNavigator({
             },
             headerTintColor: '#fff',
             headerRight: () => (
-                <View style={{  justifyContent: 'center', alignItems: 'center', borderColor: '#fff', padding: 5, marginRight: 8 }}>
-                    <Ionicons name='md-person-add' size={30} color='#fff' onPress={()=>navigation.navigate('AddAdmin')}/>
+                <View style={{ justifyContent: 'center', alignItems: 'center', borderColor: '#fff', padding: 5, marginRight: 8 }}>
+                    <Ionicons name='md-person-add' size={30} color='#fff' onPress={() => navigation.navigate('AddAdmin')} />
                 </View>
             )
         })
@@ -132,7 +134,8 @@ const LaporanStack = createStackNavigator({
         navigationOptions: ({ navigation }) => ({
             title: 'List Kritik Dan Saran',
             headerStyle: {
-                backgroundColor: '#24A1D7'
+                backgroundColor: '#24A1D7',
+                elevation: 0
             },
             headerTintColor: '#fff'
         })
@@ -168,6 +171,25 @@ const LaporanStack = createStackNavigator({
                 elevation: 0
             },
             headerTintColor: '#fff'
+        })
+    },
+    Chart: {
+        screen: ChartComponent,
+        navigationOptions: ({ navigation }) => ({
+            title: 'Statistik',
+            headerStyle: {
+                backgroundColor: '#2974FA',
+                elevation: 0
+            },
+            headerTintColor: '#fff'
+        })
+    },
+    PhotoSphereScreen: {
+        screen : PhotoSphereComponent,
+        navigationOptions: () => ({
+            title: 'PhotoSphere Hunian',
+            headerTintColor: '#fff',
+            headerTransparent:true
         })
     }
 })
@@ -239,11 +261,8 @@ const AppNavigator = createBottomTabNavigator({
             tabBarIcon: ({ tintColor }) => (
                 <Ionicons name='md-home' size={28} color={tintColor} />
             ),
-            tabBarOptions: {
-                activeTintColor: '#24A1D7'
-              }
         }
-        
+
     },
     ChatRoute: {
         screen: ChatStack,
@@ -252,9 +271,6 @@ const AppNavigator = createBottomTabNavigator({
             tabBarIcon: ({ tintColor }) => (
                 <Ionicons name='ios-chatbubbles' size={28} color={tintColor} />
             ),
-            tabBarOptions: {
-                activeTintColor: '#24A1D7'
-              }
         },
     },
     LaporanRoute: {
@@ -264,9 +280,6 @@ const AppNavigator = createBottomTabNavigator({
             tabBarIcon: ({ tintColor }) => (
                 <Ionicons name='ios-paper' size={28} color={tintColor} />
             ),
-            tabBarOptions: {
-                activeTintColor: '#24A1D7'
-              }
         }
     },
     PromoRoute: {
@@ -276,9 +289,6 @@ const AppNavigator = createBottomTabNavigator({
             tabBarIcon: ({ tintColor }) => (
                 <Ionicons name='md-pricetags' size={28} color={tintColor} />
             ),
-            tabBarOptions: {
-                activeTintColor: '#24A1D7'
-              }
         }
     },
     SettingRoute: {
@@ -288,9 +298,30 @@ const AppNavigator = createBottomTabNavigator({
             tabBarIcon: ({ tintColor }) => (
                 <Ionicons name='ios-settings' size={28} color={tintColor} />
             ),
-            tabBarOptions: {
-                activeTintColor: '#24A1D7'
-              }
+        }
+    }
+}, {
+    tabBarOptions: {
+        activeTintColor: '#fff',
+        inactiveTintColor: 'rgba(255,255,255,.3)',
+        showLabel: false,
+        style: {
+            borderTopLeftRadius: 40,
+            borderTopRightRadius: 40,
+            backgroundColor: "#24A1D7",
+            bottom: 0,
+            position: 'absolute',
+            padding: 10,
+            borderLeftColor: '#fff',
+            borderLeftWidth: 2,
+            borderRightColor: '#fff',
+            borderRightWidth: 2,
+            borderTopWidth: 2,
+            borderTopColor: '#fff',
+            borderColor: '#fff',
+            width: '100%',
+            height: 54,
+            zIndex: 8
         }
     }
 })
@@ -348,6 +379,7 @@ export default createAppContainer(createSwitchNavigator(
         App: LoginStack,
         Auth: AppNavigator
     }, {
+
     initialRouteName: 'App'
 }
 ))

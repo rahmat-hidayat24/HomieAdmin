@@ -115,7 +115,7 @@ export default class ListHunian extends Component {
     }
 
     componentDidMount() {
-        const {navigation } = this.props
+        const { navigation } = this.props
         this.focusListener = navigation.addListener('didFocus', () => {
             this.loadHunian()
         })
@@ -158,7 +158,7 @@ export default class ListHunian extends Component {
                 {
                     this.state.showSearch ? <View>
                         <TextInput placeholder='Search' keyboardType="web-search" returnKeyType="search"
-                            placeholderTextColor='rgba(0,0,0,.6)' style={styles.searchInput} onChangeText={(value)=> this.searchHunian(value)} />
+                            placeholderTextColor='rgba(0,0,0,.6)' style={styles.searchInput} onChangeText={(value) => this.searchHunian(value)} />
                     </View> : null
                 }
 
@@ -166,22 +166,24 @@ export default class ListHunian extends Component {
                     this.state.hunian.map((item, index) => {
                         const thumbnail = item.poto.split(',')
                         return (
-                        <TouchableOpacity key={index} style={[styles.itemBtnContainer, { borderLeftColor: this.state.borderColor[borderColorRepeat[index]]}]} onPress={() => this.props.navigation.navigate('DetailHunian',{hunian : item, screen :'Detail Hunian'})}>
+                            <TouchableOpacity key={index} style={[styles.itemBtnContainer, { borderLeftColor: this.state.borderColor[borderColorRepeat[index]] }]} onPress={() => this.props.navigation.navigate('DetailHunian', { hunian: item, screen: 'Detail Hunian' })}>
                                 <View style={styles.itemContentContainer}>
                                     <Image source={{ uri: `${Server.GetBackEndserver()}/images/hunian/${thumbnail[0]}` }} style={styles.itemImage} />
                                     <View>
                                         <Text style={styles.itemContentTitle}>{item.nm_hunian}</Text>
-                                        <Text style={styles.itemContentSmallText}>Alamat : {item.alamat_hunian} </Text>
-                                        <Text style={styles.itemContentSmallText}>Tipe Bangunan : {item.tipe_hunian}</Text>
-                                        <Text style={styles.itemContentSmallText}>Last Update : {item.LastOn}</Text>
+                                        <View style={{flexWrap:'wrap', flex:1,flexDirection:'row', width:'75%'}}>
+                                            <Text style={styles.itemContentSmallText}><Text style={{fontWeight:'bold'}}>Alamat :</Text> {item.alamat_hunian} </Text>
+                                        </View>
+                                        <Text style={styles.itemContentSmallText}><Text style={{fontWeight:'bold'}}>Tipe Bangunan : </Text>{item.tipe_hunian}</Text>
+                                        <Text style={styles.itemContentSmallText}><Text style={{fontWeight:'bold'}}>Last Update : </Text>{item.datePost}</Text>
                                     </View>
                                 </View>
                                 <View style={styles.itemIconContainer}>
-                                    <Icon name='pen' size={20} color='#758184' style={{ marginRight: 15 }} onPress={()=>this.props.navigation.navigate('DetailHunian',{hunian:item, screen:'Edit Hunian'})}/>
                                     <Icon name='trash' size={20} color='#758184' onPress={() => this.deleteOption(item.idHunian, item.nm_hunian)} />
                                 </View>
                             </TouchableOpacity>
-                    )})
+                        )
+                    })
                 }
             </ScrollView>
         )
@@ -261,14 +263,14 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
         marginLeft: 10,
-        color: '#758184'
+        color: '#758184',
     },
     itemContentSmallText: {
         fontSize: 13,
-        fontWeight: "bold",
         marginLeft: 10,
         paddingTop: 5,
-        color: '#758184'
+        color: '#758184',
+        flexShrink: 1
     },
     itemIconContainer: {
         flexDirection: "row",

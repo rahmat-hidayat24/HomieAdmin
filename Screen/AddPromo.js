@@ -1,25 +1,28 @@
 import React, { Component } from 'react'
-import { View, Text, Modal, TouchableOpacity, Picker, TextInput, Image, PermissionsAndroid, ScrollView } from 'react-native'
+import { View, Text, Modal, TouchableOpacity, Picker, TextInput, Image, PermissionsAndroid, ScrollView, CheckBox } from 'react-native'
 import DatePicker from 'react-native-datepicker'
 import ImagePicker from 'react-native-image-picker'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import 'intl';
 import 'intl/locale-data/jsonp/id-ID'
 import Server from './ServerFunction'
-
+import OneSignal from 'react-native-onesignal'
 
 const options = {
-    title: 'Select Photo',
+    title: 'Select Avatar',
+    customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
     storageOptions: {
         skipBackup: true,
         path: 'images',
     },
 };
 
+var tempCheckValues = [];
 export default class AddPromo extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            checkBoxChecked: [],
             date: new Date(),
             tglAwal: '',
             tglAkhir: '',
@@ -36,9 +39,17 @@ export default class AddPromo extends Component {
             title: '',
             width: 250,
             height: null,
-            idPromo: ''
+            idPromo: '',
+            targetUser: [
+                { id: 1, user: 'Penghuni' },
+                { id: 2, user: 'Pemilik' }
+            ],
+            targetPromo: ['Layanan', 'Tagihan'],
+            targetUserSelected: [],
+            targetPromoSelected: '',
         }
     }
+
 
     async requestExternalStoreageRead() {
         try {
@@ -69,28 +80,6 @@ export default class AddPromo extends Component {
     }
 
 
-    chooseImage() {
-        ImagePicker.showImagePicker(options, (response) => {
-            console.log('Response = ', response);
-
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            } else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
-            } else {
-                // const source = { uri: response.uri };
-
-                // You can also display the image using data:
-                // console.log(source)
-                this.setState({
-                    poto: response.data,
-                });
-            }
-        });
-    }
-
     addPromo() {
         var data = {
             tgl_mulai: this.state.tglAwal,
@@ -100,7 +89,9 @@ export default class AddPromo extends Component {
             kuota: this.state.kuota,
             jenisPromo: this.state.jenisPromo,
             persen: this.state.persenText,
-            nama_promo: this.state.title
+            nama_promo: this.state.title,
+            targetPromo: this.state.targetPromoSelected,
+            targetUser: this.state.targetUserSelected.join()
         }
         fetch(`${Server.GetBackEndserver()}/promo/add`, {
             method: 'POST',
@@ -114,6 +105,8 @@ export default class AddPromo extends Component {
             .then(res => {
                 alert(res.message)
                 this.uploadPhoto(res.idPromo)
+                this.sendNotification()
+                this.props.navigation.goBack()
             })
     }
 
@@ -135,9 +128,32 @@ export default class AddPromo extends Component {
         // 
     }
 
+
+    imagePicker() {
+        ImagePicker.showImagePicker(options, (response) => {
+            console.log('Response = ', response);
+
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            } else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            } else {
+
+                // You can also display the image using data:
+                // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+
+                this.setState({
+                    poto: response.data,
+                });
+            }
+        });
+    }
+
     getPhotosOption = async () => {
         if (await this.requestExternalStoreageRead()) {
-            this.chooseImage()
+            this.imagePicker()
         }
     }
 
@@ -151,23 +167,42 @@ export default class AddPromo extends Component {
 
     }
 
+    sendNotification() {
+        let headers = {
+            'Content-Type': 'application/json; charset=utf-8',
+            Authorization: "Basic 'NGZlNWRlMWYtODFlMi00NTI3LWEyMTAtZTdiMjE3MzViOGQz'",
+        };
+        let endpoint = 'https://onesignal.com/api/v1/notifications';
+        let params = {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({
+                app_id: '47a39a18-f25e-45da-98a5-7538fd69c33e',
+                included_segments: ["Active Users"],
+                headings: { en: 'Promo Terbaru Dari Homie' },
+                contents: { en: this.state.title },
+            }),
+        };
+        
+        fetch(endpoint, params).then(res => console.log(res));
+    }
 
     imageCheck() {
         const screen = this.props.navigation.state.params.screen
         if (screen == 'Tambah Promo') {
             return (
                 this.state.poto.length == 0 ?
-                    <View>
+                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                         <Icon name='add-a-photo' size={50} color='#24A1D7' onPress={() => this.getPhotosOption()} />
                         <Text>Add Photo</Text>
                     </View> :
                     <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                         <Image source={{ uri: 'data:image/jpeg;base64,' + this.state.poto }} style={{ width: this.state.width, height: this.state.height }} onLoad={(event) => this.resizeImage(event)} />
-                        <Icon name='photo-camera' size={35} color='#24A1D7' onPress={() => this.getPhotosOption()} style={{ position: 'relative' }} />
+                        <Icon name='photo-camera' size={35} color='#24A1D7' onPress={() => this.getPhotosOption()} style={{ position: 'relative', alignSelf: 'center' }} />
                         <Text>Change Photo</Text>
                     </View>
             )
-        } else {
+        } else if (screen == 'Edit Promo') {
             const data = this.props.navigation.state.params.data
             return (
                 this.state.poto == data.poto ?
@@ -225,6 +260,21 @@ export default class AddPromo extends Component {
             })
     }
 
+
+    checkBoxChanged(id, value, title) {
+        this.setState({
+            checkBoxChecked: tempCheckValues
+        })
+
+        var tempCheckBoxChecked = this.state.checkBoxChecked;
+        tempCheckBoxChecked[id] = !value;
+
+        this.setState({
+            checkBoxChecked: tempCheckBoxChecked
+        })
+
+    }
+
     componentDidMount() {
         const screen = this.props.navigation.state.params.screen
         if (screen == 'Edit Promo') {
@@ -241,7 +291,9 @@ export default class AddPromo extends Component {
                 persenText: Number(data.persen),
                 title: data.nama_promo,
                 poto: data.poto,
-                idPromo: data.id_promo
+                idPromo: data.id_promo,
+                targetPromoSelected: data.targetPromo,
+
             })
         } else {
             this.setState({
@@ -261,7 +313,7 @@ export default class AddPromo extends Component {
 
     render() {
         return (
-            <ScrollView style={{ flex: 1, paddingHorizontal: 15 }}>
+            <ScrollView style={{ flex: 1, paddingHorizontal: 15, backgroundColor: '#fff' }}>
                 <Modal animationType="fade"
                     transparent={true}
                     visible={this.state.modalVisible}>
@@ -273,6 +325,8 @@ export default class AddPromo extends Component {
                             <View style={{ paddingHorizontal: '2%', flexDirection: 'row', justifyContent: 'space-around' }}>
                                 <View>
                                     <Text style={{ fontWeight: 'bold' }}>Jenis Promo</Text>
+                                    <Text style={{ fontWeight: 'bold' }}>Target Promo</Text>
+                                    <Text style={{ fontWeight: 'bold' }}>Target User Promo</Text>
                                     <Text style={{ fontWeight: 'bold' }}>Potongan ( % )</Text>
                                     <Text style={{ fontWeight: 'bold' }}>Kode Promo</Text>
                                     <Text style={{ fontWeight: 'bold' }}>Tanggal Mulai</Text>
@@ -282,6 +336,8 @@ export default class AddPromo extends Component {
                                 </View>
                                 <View>
                                     <Text>: {this.state.jenisPromo}</Text>
+                                    <Text>: {this.state.targetPromoSelected}</Text>
+                                    <Text>: {this.state.targetUserSelected.join()}</Text>
                                     <Text>: {this.state.persenText}%</Text>
                                     <Text>: {this.state.kodePromo}</Text>
                                     <Text>: {this.state.tglAwal}</Text>
@@ -301,21 +357,20 @@ export default class AddPromo extends Component {
                     </View>
                 </Modal>
 
-                <View style={{ width: '80%', marginTop: 15 }}>
-                    <Text>Buat Judul Semenarik Mungkin (Maks. 35 Huruf) </Text>
+                <View style={{ width: '100%', marginTop: 15 }}>
                     <TextInput
-                        placeholder='Judul Promo'
+                        placeholder='Tambahkan Judul Promo'
                         keyboardType='default'
-                        underlineColorAndroid='#24A1D7'
+                        underlineColorAndroid='#eee'
                         maxLength={35}
                         value={this.state.title}
-                        style={{ borderRadius: 10, borderWidth: 1, borderColor: '#eee', width: '100%' }}
+                        style={{ width: '100%' }}
                         onChangeText={(value) => this.setState({ title: value })}
                     />
                 </View>
-                <View style={{ width: '90%' }}>
+                <View style={{ width: '100%', marginVertical: 15 }}>
                     <Text>Jenis Promo :</Text>
-                    <View style={{ borderColor: '#eee', borderWidth: 1, alignSelf: 'center', width: '80%' }}>
+                    <View style={{ borderColor: '#eee', borderWidth: 1, alignSelf: 'center', width: '100%' }}>
                         <Picker selectedValue={this.state.jenisPromo}
                             style={{ height: 50, width: '100%', alignSelf: 'center' }}
                             mode='dropdown'
@@ -330,13 +385,13 @@ export default class AddPromo extends Component {
                     </View>
                 </View>
 
-                <View style={{ width: '50%' }}>
-                    <Text>Potongan ( % )</Text>
+                <View style={{ width: '50%', marginVertical: 15 }}>
+                    <Text>Potongan Harga : </Text>
                     <View style={{ borderColor: '#eee', borderWidth: 1, alignSelf: 'center', width: '100%' }}>
                         <Picker
                             selectedValue={this.state.persenText}
                             style={{ height: 50, width: '100%', alignSelf: 'center', borderWidth: 1, borderColor: '#eee' }}
-                            mode='dropdown'
+                            mode='dialog'
                             onValueChange={(itemValue, itemIndex) =>
                                 this.setState({ persenText: itemValue })
                             }>
@@ -348,24 +403,57 @@ export default class AddPromo extends Component {
                         </Picker>
                     </View>
                 </View>
-                <View style={{ width: '80%' }}>
-                    <Text>Masukkan Kode Promo :</Text>
+                <View style={{ marginVertical: 15 }}>
+                    <View style={{ flexDirection: 'row', padding: 15, justifyContent: 'space-evenly', borderWidth: 1, borderRadius: 10, borderColor: '#eee' }}>
+                        <Text>Target Promo : </Text>
+                        {
+                            this.state.targetPromo.map((item, index) => (
+                                <View key={index}>
+                                    <TouchableOpacity style={{ borderColor: '#4f81c7', backgroundColor: this.state.targetPromoSelected === item ? '#4f81c7' : '#fff', borderWidth: 1, padding: 8, borderRadius: 8, width: 80, alignItems: 'center' }} onPress={() => this.setState({ targetPromoSelected: item })}>
+                                        <Text style={{ color: this.state.targetPromoSelected === item ? '#fff' : '#4f81c7' }}>{item}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            ))
+                        }
+                    </View>
+                </View>
+                <View style={{ flexDirection: 'row', marginVertical: 15, justifyContent: 'space-evenly' }}>
+                    <Text>Target User :</Text>
+                    {
+
+                        this.state.targetUser.map((val) => {
+                            { tempCheckValues[val.id] = false }
+                            return (
+
+                                <View key={val.id} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <CheckBox
+                                        value={this.state.checkBoxChecked[val.id]}
+                                        onValueChange={() => { this.checkBoxChanged(val.id, this.state.checkBoxChecked[val.id], val.user), this.state.checkBoxChecked[val.id] ? this.state.targetUserSelected.push(val.user) : this.state.targetUserSelected.splice(this.state.targetUserSelected.indexOf(val.user), 1) }}
+                                    />
+                                    <Text>{val.user}</Text>
+                                </View>
+                            )
+                        })
+                    }
+                </View>
+                <View style={{ width: '100%' }}>
                     <TextInput
                         placeholder='Kode Promo'
                         keyboardType='default'
-                        underlineColorAndroid='#24A1D7'
+                        underlineColorAndroid='#eee'
                         autoCapitalize='characters'
-                        style={{ borderRadius: 10, borderWidth: 1, borderColor: '#eee', width: '100%' }}
+                        value={this.state.kodePromo}
+                        style={{ width: '100%' }}
                         onChangeText={(value) => this.setState({ kodePromo: value })}
                     />
                 </View>
-                <View>
+                <View style={{ marginVertical: 15 }}>
                     <Text>Tanggal Mulai : </Text>
                     <DatePicker
                         style={{ width: '95%' }}
                         date={this.state.tglAwal}
                         mode="date"
-                        placeholder="select date"
+                        placeholder="Tanggal Mulai"
                         format="DD MMM YYYY"
                         minDate={new Date()}
                         confirmBtnText="Confirm"
@@ -391,7 +479,7 @@ export default class AddPromo extends Component {
                         style={{ width: '95%' }}
                         date={this.state.tglAkhir}
                         mode="date"
-                        placeholder="select date"
+                        placeholder="Tanggal Akhir"
                         format="DD MMM YYYY"
                         minDate={this.state.tglAwal}
                         confirmBtnText="Confirm"

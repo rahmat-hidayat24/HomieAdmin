@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image, TextInput, Button, FlatList } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image, TextInput, Button, FlatList,Dimensions } from 'react-native'
 import Icon from "react-native-vector-icons/FontAwesome5"
 import Server from './ServerFunction'
 
@@ -54,7 +54,7 @@ export default class Promo extends Component {
 
     render() {
         return (
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1 , marginBottom:Dimensions.get('window').height - 595}}>
 
                 <FlatList
                     data={this.state.promoList}

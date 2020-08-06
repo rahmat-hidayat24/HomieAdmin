@@ -7,7 +7,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 
 export default class Chat extends Component {
-    intervalID;
+    
 
     constructor(props) {
         super(props);

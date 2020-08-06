@@ -4,13 +4,23 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import nl.lightbase.PanoramaViewPackage;
 import com.imagepicker.ImagePickerPackage;
+import com.horcrux.svg.SvgPackage;
+import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
+import com.airbnb.android.react.maps.MapsPackage;
+import com.geektime.rnonesignalandroid.ReactNativeOneSignalPackage;
+import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import com.swmansion.reanimated.ReanimatedPackage;
+import com.BV.LinearGradient.LinearGradientPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Arrays;
+import com.facebook.react.shell.MainReactPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -23,11 +33,23 @@ public class MainApplication extends Application implements ReactApplication {
 
         @Override
         protected List<ReactPackage> getPackages() {
-          @SuppressWarnings("UnnecessaryLocalVariable")
-          List<ReactPackage> packages = new PackageList(this).getPackages();
-          // Packages that cannot be autolinked yet can be added manually here, for example:
-          // packages.add(new MyReactNativePackage());
-          return packages;
+          return Arrays.<ReactPackage>asList(
+            new MainReactPackage(),
+            new PanoramaViewPackage(),
+            new ImagePickerPackage(),
+            new SvgPackage(),
+            new SafeAreaContextPackage(),
+            new ReactNativeOneSignalPackage(),
+            new LinearGradientPackage(),
+            new RNGestureHandlerPackage(),
+            new ReanimatedPackage(),
+            new MapsPackage()
+            ); 
+          // @SuppressWarnings("UnnecessaryLocalVariable")
+          // List<ReactPackage> packages = new PackageList(this).getPackages();
+          // // Packages that cannot be autolinked yet can be added manually here, for example:
+          // // packages.add(new MyReactNativePackage());
+          // return packages;
         }
 
         @Override

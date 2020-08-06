@@ -38,10 +38,10 @@ export default class LaporanUser extends Component {
             .then(res => res.json())
             .then(res => {
                 let pria = res.filter((item) => {
-                    return item.jk === 'Pria'
+                    return item.jenis_kelamin === 'Pria'
                 })
                 let wanita = res.filter((item) => {
-                    return item.jk === 'Wanita'
+                    return item.jenis_kelamin === 'Wanita'
                 })
                 this.setState({
                     userList: res,
@@ -57,10 +57,10 @@ export default class LaporanUser extends Component {
             .then(res => res.json())
             .then(res => {
                 let pria = res.filter((item) => {
-                    return item.jk === 'Pria'
+                    return item.jenis_kelamin === 'Pria'
                 })
                 let wanita = res.filter((item) => {
-                    return item.jk === 'Wanita'
+                    return item.jenis_kelamin === 'Wanita'
                 })
                 this.setState({
                     userList: res,
@@ -123,12 +123,12 @@ export default class LaporanUser extends Component {
                                     <Image source={{ uri: `${Server.GetBackEndserver()}/images/user/${item.poto}` }} style={styles.itemImage} />
                                     <View style={{ width: '65%' }}>
                                         <Text style={styles.itemContentTitle}>{item.nama}</Text>
-                                        <Text style={styles.itemContentSmallText}>Jenis Kelamin : {item.jk} </Text>
+                                        <Text style={styles.itemContentSmallText}>Jenis Kelamin : {item.jenis_kelamin} </Text>
                                         <View style={{ flexDirection: 'row' }}>
                                             <Text style={styles.itemContentSmallText}>Email : </Text>
                                             <Text style={[styles.itemContentSmallText, { flex: 1, marginLeft: 0 }]}>{item.email}</Text>
                                         </View>
-                                        <Text style={styles.itemContentSmallText}>Last Online : </Text>
+                                        <Text style={styles.itemContentSmallText}>Last Online : {`${item.lastActive.split(' ')[0]} ${item.lastActive.split(' ')[1]} ${item.lastActive.split(' ')[2]}`} </Text>
                                     </View>
                                 </View>
                                 <View style={styles.itemIconContainer}>

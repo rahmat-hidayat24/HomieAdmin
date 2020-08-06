@@ -38,6 +38,18 @@ target 'HomieAdmin' do
 
   pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
 
+  pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
+
+  pod 'react-native-onesignal', :path => '../node_modules/react-native-onesignal'
+
+  pod 'react-native-maps', :path => '../node_modules/react-native-maps'
+
+  pod 'react-native-safe-area-context', :path => '../node_modules/react-native-safe-area-context'
+
+  pod 'RNSVG', :path => '../node_modules/react-native-svg'
+
+  pod 'PanoramaView', :path => '../node_modules/@lightbase/react-native-panorama-view'
+
   target 'HomieAdminTests' do
     inherit! :search_paths
     # Pods for testing
